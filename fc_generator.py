@@ -17,6 +17,7 @@ def read_and_record(word, filepath, lang='pt', localization='com.br'):
     # replace all special characters before saving
     w = w.replace('/', '_')
     w = w.replace('?', '')
+    w = w.replace('!', '')
     w = w.replace('.', '_')
     w = w.replace(' ', '_')
     
