@@ -51,9 +51,9 @@ if uploaded_file is not None:
         os.makedirs(filepath)
         
     # For each row on the spreadsheet.   Read the text, save the audio file.   Update the dataframe """
-    for index, row in df.head(n=3).iterrows():
+    for index, row in df.iterrows():
         file_name = read_and_record(row['Portuguese'], filepath)
-        df.loc[index, 'Audio'] = f"[sound:{folder}/{file_name}]"
+        df.loc[index, 'Audio'] = f"[sound:{file_name}]"
     
     st.subheader('Results')
     st.write(df)
