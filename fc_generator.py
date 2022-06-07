@@ -58,6 +58,8 @@ if uploaded_file is not None:
     st.subheader('Results')
     st.write(df)
     
+    st.write("Saved to filepath: " + filepath)
+    
     df.to_csv(filepath + '/' + output_filename, index=False) 
 
     
