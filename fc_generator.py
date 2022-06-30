@@ -3,10 +3,14 @@ import requests
 import pandas as pd
 from gtts import gTTS
 import os
-
+from googletrans import Translator
 
 
 def determine_language(language='Portuguese (Brazilian)'):
+    """
+    Convert the language selected by each user into the appropriate abbreviated version
+    for Google Translate
+    """
 
     lang_dict = {
         'Portuguese (Brazilian)' : 'pt',
@@ -28,6 +32,7 @@ def read_and_record(word, filepath, lang='pt', localization='com.br'):
     # replace all special characters before saving
     w = w.replace('/', '_')
     w = w.replace('?', '')
+    w = w.replace('¿','')
     w = w.replace('!', '')
     w = w.replace('.', '_')
     w = w.replace(' ', '_')
@@ -40,6 +45,18 @@ def read_and_record(word, filepath, lang='pt', localization='com.br'):
 
 
 
+def return_translated_text(raw_text, source, destination='en'):
+    
+    # create a translator object for text translations
+    translator = Translator()
+    
+    
+    # return object with translations
+    result = translator.translate(raw_text, src = source, dest = destination)
+    
+    return result
+    
+    
 
 
 ########
@@ -77,7 +94,18 @@ if uploaded_file is not None:
         
     # For each row on the spreadsheet.   Read the text, save the audio file.   Update the dataframe """
     for index, row in df.iterrows():
-        file_name = read_and_record(row['portuguese'], filepath)
+        
+        if df.loc[index, 'portuguese'] == 'x':
+            st.write(f'Hello, I am translating from English to {selected_language}.')
+            translation = return_translated_text(df.loc[index, 'english'], source = 'en', destination = lang)
+            df.loc[index, 'portuguese'] = str(translation.text)
+
+        if df.loc[index, 'english'] == 'x':
+            st.write(f'I am translating from {selected_language} to English.')
+            translation = return_translated_text(df.loc[index, 'portuguese'], source = lang, destination = 'en')
+            df.loc[index, 'english'] = str(translation.text)
+            
+        file_name = read_and_record(df.loc[index, 'portuguese'], filepath)
         df.loc[index, 'audio'] = f"[sound:{file_name}]"
     
     st.subheader('Results')
