@@ -6,6 +6,17 @@ import os
 
 
 
+def determine_language(language='Portuguese (Brazilian)'):
+
+    lang_dict = {
+        'Portuguese (Brazilian)' : 'pt',
+        'Spanish (Mexican)': 'es',
+        }
+    
+    return lang_dict.get(language)
+
+
+
 def read_and_record(word, filepath, lang='pt', localization='com.br'):
     """Read each word and save the mp3 file in the correct location.
     Full localized accents can be found here:  
@@ -28,21 +39,35 @@ def read_and_record(word, filepath, lang='pt', localization='com.br'):
     return new_filename
 
 
+
+
+
 ########
 
 st.title('Create Portuguese Notecards')
-
+st.write('<br>', unsafe_allow_html=True)
 ########
+
+selected_language = st.selectbox('Which language are you studying?', ('Portuguese (Brazilian)', 'Spanish (Mexican)'))
+
+st.write('You selected:', selected_language)
+
+lang = determine_language(selected_language)
+
+st.write('<br>', unsafe_allow_html=True)
 
 
 folder = st.text_input('Please specify an output folder name', 'output')
 output_filename = st.text_input('Please specify an notecard file name', 'test.csv')
+st.write('<br><br>', unsafe_allow_html=True)
 uploaded_file = st.file_uploader('Please upload a file')
 
 
 if uploaded_file is not None:
     
     df = pd.read_csv(uploaded_file)
+    
+    df.columns = map(str.lower, df.columns)
     
     filepath = 'output_files/' + folder
     isExist = os.path.exists(filepath)
@@ -52,8 +77,8 @@ if uploaded_file is not None:
         
     # For each row on the spreadsheet.   Read the text, save the audio file.   Update the dataframe """
     for index, row in df.iterrows():
-        file_name = read_and_record(row['Portuguese'], filepath)
-        df.loc[index, 'Audio'] = f"[sound:{file_name}]"
+        file_name = read_and_record(row['portuguese'], filepath)
+        df.loc[index, 'audio'] = f"[sound:{file_name}]"
     
     st.subheader('Results')
     st.write(df)
